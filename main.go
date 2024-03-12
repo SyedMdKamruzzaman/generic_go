@@ -16,15 +16,18 @@ func main() {
     // Initialize the database connection
     db := infra.GetDB()
     defer db.Close()
-	dbHandler := usecase.NewDBHandler(db)
+
+    // Create a DBHandler instance
+    dbHandler := &delivery.DBHandler{DB: db}
+
     // Register HTTP handlers
-	http.HandleFunc("/create", delivery.CreateHandler(dbHandler.Create))
-    http.HandleFunc("/read", delivery.ReadHandler(dbHandler.Read))
-    http.HandleFunc("/readall", delivery.ReadAllHandler(dbHandler.ReadAll))
-    http.HandleFunc("/update", delivery.UpdateHandler(dbHandler.Update))
-    http.HandleFunc("/delete", delivery.DeleteHandler(dbHandler.Delete))
+    http.HandleFunc("/create", dbHandler.CreateHandler(usecase.Create))
+    http.HandleFunc("/read", dbHandler.ReadHandler(usecase.Read))
+    http.HandleFunc("/readall", dbHandler.ReadAllHandler(usecase.ReadAll))
+    http.HandleFunc("/update", dbHandler.UpdateHandler(usecase.Update))
+    http.HandleFunc("/delete", dbHandler.DeleteHandler(usecase.Delete))
 
     // Start the HTTP server
-    fmt.Println("Server listening on port 8082...")
-    http.ListenAndServe(":8082", nil)
+    fmt.Println("Server listening on port 8080...")
+    http.ListenAndServe(":8080", nil)
 }
